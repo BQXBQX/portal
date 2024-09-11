@@ -26,6 +26,7 @@ const SchemaGraph: React.FunctionComponent<ISchemaGraphProps> = props => {
   const { onEdgesChange, onNodesChange, onConnectStart, onConnectEnd } = useInteractive();
   const { nodes, edges, theme } = store;
   const { algorithm } = useThemeContainer();
+  console.log('nodes', nodes);
   const isEmpty = nodes.length === 0;
   const isDark = algorithm === 'darkAlgorithm';
   // const rfBG = isDark ? '#161616' : collapsed.left && collapsed.right ? '#fff' : '#f4f5f5';
@@ -38,7 +39,10 @@ const SchemaGraph: React.FunctionComponent<ISchemaGraphProps> = props => {
     isPreview = false,
     disabled = false,
     graphId,
+    nodes: graphNodes,
+    edges: graphEdges,
   } = useGraphContext();
+
   const description = (
     <FormattedMessage
       id="Start sketching a model, a vertex label is a named grouping or categorization of nodes within the graph dataset"
@@ -55,13 +59,23 @@ const SchemaGraph: React.FunctionComponent<ISchemaGraphProps> = props => {
     });
   }, []);
 
+  useEffect(() => {
+    console.log('节点和边发生更新', graphEdges, graphNodes);
+    graphEdges &&
+      graphNodes &&
+      updateStore(draft => {
+        draft.nodes = graphNodes;
+        draft.edges = graphEdges;
+      });
+  }, [graphEdges, graphNodes]);
+
   return (
     <div style={{ height: '100%', width: '100%', ...props.style }} className={props.className}>
       <div style={{ height: '100%', width: '100%', position: isPreview ? 'relative' : 'absolute' }}>
         <ReactFlow
           nodesDraggable={!disabled}
           // nodes={nodes}
-          // edges={edges}
+          // edges={edges}「方案选单」
           //@ts-ignore
           nodes={fakeSnapshot(nodes)}
           edges={fakeSnapshot(edges)}

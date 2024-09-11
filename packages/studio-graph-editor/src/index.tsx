@@ -22,6 +22,8 @@ interface IGraphProps {
   style?: React.CSSProperties;
   defaultNodes?: ISchemaNode[];
   defaultEdges?: ISchemaEdge[];
+  nodes?: ISchemaNode[];
+  edges?: ISchemaEdge[];
   isMiniMap?: boolean;
   isControlButton?: boolean;
   isPreview?: boolean;
