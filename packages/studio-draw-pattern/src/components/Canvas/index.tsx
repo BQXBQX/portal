@@ -24,6 +24,8 @@ export const Canvas = () => {
   const { transformNode, transformEdge } = useTransform();
   const graphNodes = useGraphStore(state => state.graphNodes);
   const graphEdges = useGraphStore(state => state.graphEdges);
+  const updateGraphNode = useGraphStore(state => state.updateGraphNode);
+  const updateGraphEdge = useGraphStore(state => state.updateGraphEdge);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const { encodeProperties, encodeNodes, encodeEdges, generateMATCH, generateWHERE } = useEncodeCypher();
@@ -73,6 +75,7 @@ export const Canvas = () => {
         if (isExist) editNode && editNode(transformNode(node));
         if (!isExist) addNode && addNode(transformNode(node));
         editNode && editNode(transformNode(node));
+        updateGraphNode(node);
       });
     },
     [nodesStore],
@@ -85,32 +88,27 @@ export const Canvas = () => {
         const isExist = edgesStore.some(edgeStore => edgeStore.edgeKey === edge.id);
         if (isExist) editEdge && editEdge(transformEdge(edge));
         if (!isExist) addEdge && addEdge(transformEdge(edge));
+        updateGraphEdge(edge);
       });
     },
     [edgesStore],
   );
 
-  const MyGraph = useCallback(
-    () => (
-      <Graph
-        graphId="edit-graph"
-        defaultNodes={graphNodes}
-        defaultEdges={graphEdges as unknown as ISchemaEdge[]}
-        onNodesChange={handleNodes}
-        onEdgesChange={handleEdges}
-        isShowPopover={true}
-        popoverCustomContent={<PopoverContent onChange={handlePropertiesChange}></PopoverContent>}
-      />
-    ),
-    [graphNodes, graphEdges],
-  );
   useEffect(() => {
     console.log('节点变化啦', nodesStore);
   }, [isModalOpen]);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <MyGraph></MyGraph>
+      <Graph
+        graphId="edit-graph"
+        nodes={graphNodes}
+        edges={graphEdges as unknown as ISchemaEdge[]}
+        onNodesChange={handleNodes}
+        onEdgesChange={handleEdges}
+        isShowPopover={true}
+        popoverCustomContent={<PopoverContent onChange={handlePropertiesChange}></PopoverContent>}
+      />
       <Button
         onClick={() => {
           encodeEdges();
